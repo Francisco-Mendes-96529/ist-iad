@@ -9,6 +9,6 @@ UC Instrumentação e Aquisição de Dados
 - [ ] Ras.PI - Editar os programas com botões
 
 ## Informações
-- Item Sensor in dry soil - 0-300
-- Item Sensor in humid soil - 300-700
-- Item Sensor in water	700-950
+- Sensor in dry soil - 0-300
+- Sensor in humid soil - 300-700
+- Sensor in water	700-950
