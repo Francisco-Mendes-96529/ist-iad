@@ -1,12 +1,13 @@
 # UC - Instrumentação e Aquisição de Dados
 
 ## To-Do
-- [ ] Dar o tempo ao Arduino
-- [ ] Confirmar leitura do tempo
-
-## Sugestões
+- [X] Dar o tempo ao Arduino
+- [X] Confirmar leitura do tempo
 - [ ] Classe com os programas
 - [ ] Ras.PI - Editar os programas com botões
+
+## Sugestões
+- [ ] 
 
 ## Informações
 <table>
