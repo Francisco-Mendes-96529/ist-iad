@@ -1,5 +1,6 @@
 int dia, hora, mins, seg;
 int start_time;
+
 void setup() {
   Serial.begin(9600);
   Serial.println("Arduino is ready");
