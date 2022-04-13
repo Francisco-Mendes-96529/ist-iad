@@ -2,21 +2,6 @@
 
 ## To-Do
 - [ ] Dar o tempo ao Arduino
-- [ ] Experimentar:
-```
-k=0
-while ser.inWaiting() <= 0:
-	time.sleep(0.01)
-	k++
-	if k==10:
-		break
-	
-if ser.inWaiting() > 0:
-	line = ser.readline().decode('utf-8').rstrip()  # Ler e traduz o que foi enviado pelo Arduino
-	print(line)
-else:
-	print("buffer invalido")
-```
 
 ## Sugestões
 - [ ] Classe com os programas
