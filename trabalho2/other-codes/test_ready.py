@@ -19,23 +19,18 @@ else:
     print("Não foi encontrado o Arduino")
     sys.exit()
     
-ser = serial.Serial(dev_name, 9600)
+ser = serial.Serial(dev_name, 9600, timeout=1)
 
-today = time.strftime("%w, %H:%M:%S")
-print(today)
+ser.reset_input_buffer()  # Reset do buffer para dar a ordem ao Arduino
 
-while True:
-    time.sleep(1)  # Tempo de espera entre escrita e leitura
-
-    weekDay = time.strftime("%w")
-    ser.reset_input_buffer()  # Reset do buffer para dar a ordem ao Arduino
-    ser.write(bytes(weekDay,'utf-8'))
-    time.sleep(0.03)  # Tempo de espera entre escrita e leitura
-            
-    print("\nResultado do comando:")
-    # Verificar se há algo escrito no buffer pelo Arduino
-    if ser.inWaiting() > 0:
+def initArduino():
+    start = time.time()
+    while True:
         line = ser.readline().decode('utf-8').rstrip()  # Ler e traduz o que foi enviado pelo Arduino
-        print(line)
-    else:
-        print("buffer invalido")
+        if line=="Arduino is ready":
+            print(line)
+            stop = time.time()
+            print(stop-start)
+            break
+
+initArduino()
