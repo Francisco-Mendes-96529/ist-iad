@@ -2,6 +2,7 @@
 
 ## To-Do
 - [ ] Dar o tempo ao Arduino
+- [ ] Confirmar leitura do tempo
 
 ## Sugestões
 - [ ] Classe com os programas
