@@ -1,4 +1,5 @@
 # UC - Instrumentação e Aquisição de Dados
+### Sistema de Rega, com 20 programas e 12 canais de rega
 
 ## To-Do
 - [X] Dar o tempo ao Arduino
