@@ -33,15 +33,17 @@ def receber():
     for i in range(20):
         for j in range(7):
             Prog[i]['D'][j] = int(ser.readline().decode('utf-8').rstrip())
-        Prog[i]['H'] = int(ser.readline().decode('utf-8').rstrip())
-        Prog[i]['M'] = int(ser.readline().decode('utf-8').rstrip())
+        Prog[i]['Hi'] = int(ser.readline().decode('utf-8').rstrip())
+        Prog[i]['Mi'] = int(ser.readline().decode('utf-8').rstrip())
+        Prog[i]['Hf'] = int(ser.readline().decode('utf-8').rstrip())
+        Prog[i]['Mf'] = int(ser.readline().decode('utf-8').rstrip())
         for j in range(12):
             Prog[i]['Canal'][j] = int(ser.readline().decode('utf-8').rstrip())
         Prog[i]['Fonte'] = int(ser.readline().decode('utf-8').rstrip())
         Prog[i]['Sensor'] = int(ser.readline().decode('utf-8').rstrip())
         
         
-Prog = [{'D':[0,0,0,0,0,0,0], "H":0, "M":0, "Canal":[0,0,0,0,0,0,0,0,0,0,0,0], "Fonte":0, "Sensor":0} for i in range(20)]
+Prog = [{'D':[0,0,0,0,0,0,0], "Hi":0, "Mi":0, "Hf":0, "Mf":0, "Canal":[0,0,0,0,0,0,0,0,0,0,0,0], "Fonte":0, "Sensor":0} for i in range(20)]
 
 ser = serial.Serial(dev_name, 9600, timeout=1)
 
