@@ -1,6 +1,7 @@
 int dia, hora, mins, seg;
 void setup() {
   Serial.begin(9600);
+  Serial.println("Arduino is ready");
   pinMode(A0, INPUT);
 
 }
@@ -8,10 +9,10 @@ void setup() {
 void loop() {
   if(Serial.available()>0){
     String data = Serial.readStringUntil('\n');
-    const char *stringg = data.c_str();
-    Serial.println(data);
-    int t = sscanf(stringg, "%d, %d:%d:%d", &dia, &hora, &mins, &seg);
+    //Serial.println(data);
+    int t = sscanf(data.c_str(), "%d, %d:%d:%d", &dia, &hora, &mins, &seg);
     //Serial.println(t);
+    if (t==4){
     switch (dia){
       case 0:
         Serial.println("Domingo");
@@ -38,6 +39,8 @@ void loop() {
         Serial.println("LEITURA INVALIDA");
         break;      
     }
+    }
+    else Serial.println("LEITURA INVALIDA");
     Serial.flush();
   }
 }

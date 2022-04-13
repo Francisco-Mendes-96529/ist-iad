@@ -31,16 +31,16 @@ print("\nResultado do comando:")
 j=0
 while True:
     ser.reset_input_buffer()  # Reset do buffer para dar a ordem ao Arduino
-#     ser.write(bytes(today,'utf-8'))
     ser.write(today.encode('utf-8'))
     j += 1
 #     print(j)
     time.sleep(0.03)
     if ser.inWaiting() > 0:
-        line = ser.readline().decode('utf-8')#.rstrip()  # Ler e traduz o que foi enviado pelo Arduino
+        line = ser.readline().decode('utf-8').rstrip()  # Ler e traduz o que foi enviado pelo Arduino
         print(line)
         print(j)
-        break
+    time.sleep(1)
+#         break
 #     else:
 #         print("buffer invalido")
 

@@ -33,7 +33,8 @@ void loop() {
         break;
       default:
         Serial.println("LEITURA INVALIDA");
-        break;
+        break;      
     }
+    Serial.flush();
   }
 }
