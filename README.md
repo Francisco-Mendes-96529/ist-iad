@@ -3,7 +3,7 @@
 ## To-Do
 - [X] Dar o tempo ao Arduino
 - [X] Confirmar leitura do tempo
-- [ ] Estrutura com os programas
+- [X] Estrutura com os programas
 - [ ] Ras.PI - Editar os programas com botões
 
 ## Sugestões
