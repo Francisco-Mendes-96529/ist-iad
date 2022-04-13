@@ -16,18 +16,18 @@ void loop() {
 
 void tempo() {
   while (true) {
-  if(Serial.available()>0){
-    String data = Serial.readStringUntil('\n');
-    //Serial.println(data);
-    int t = sscanf(data.c_str(), "%d, %d:%d:%d", &dia, &hora, &mins, &seg);
-    //Serial.println(t);
-    if (t==4){
-    Serial.println("LEITURA VALIDA");
-    start_time=millis();
-    break;
+    if(Serial.available()>0){
+      String data = Serial.readStringUntil('\n');
+      //Serial.println(data);
+      int t = sscanf(data.c_str(), "%d, %d:%d:%d", &dia, &hora, &mins, &seg);
+      //Serial.println(t);
+      if (t==4){
+        Serial.println("LEITURA VALIDA");
+        start_time=millis();
+        break;
+      }
+      else Serial.println("LEITURA INVALIDA");
+      Serial.flush();
     }
-    else Serial.println("LEITURA INVALIDA");
-    Serial.flush();
-  }
   }
 }

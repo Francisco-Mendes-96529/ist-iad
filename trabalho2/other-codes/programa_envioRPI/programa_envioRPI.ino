@@ -1,9 +1,10 @@
 struct Programa{
   int d[7]={0,0,0,0,0,0,0}; //dia
-  int h=0, m=0; //hora, minutos
+  int hi=0, mi=0; //hora, minutos iniciais
+  int hf=0, mf=0; //hora, minutos finais
   int canais[12]={0,0,0,0,0,0,0,0,0,0,0,0};
   int fonte=0; //torneira-0, bomba-1
-  int sensor=0; //0, 1, 2 sensores ligados
+  int sensor=0; //0-nenhum, 1-sensor1, 2-sensor2, 3-ambos
 }prog[20];
 
 void setup() {
@@ -26,9 +27,13 @@ void enviar(){
       Serial.println(prog[i].d[j]);
       Serial.flush();
     }
-    Serial.println(prog[i].h);
+    Serial.println(prog[i].hi);
     Serial.flush();
-    Serial.println(prog[i].m);
+    Serial.println(prog[i].mi);
+    Serial.flush();
+    Serial.println(prog[i].hf);
+    Serial.flush();
+    Serial.println(prog[i].mf);
     Serial.flush();
     for (int j=0; j<12; j++)
     {
