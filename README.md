@@ -7,7 +7,7 @@
 - [ ] Ras.PI - Editar os programas com botões
 
 ## Sugestões
-- [ ] 
+- [ ] -
 
 ## Informações
 <table>
