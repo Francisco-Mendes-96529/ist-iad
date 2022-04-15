@@ -5,10 +5,15 @@
 - [X] Dar o tempo ao Arduino
 - [X] Confirmar leitura do tempo
 - [X] Estrutura com os programas
-- [ ] Ras.PI - Editar os programas com botões
+- [X] Ras.PI - Editar os programas com botões
+- [ ] Ler os programas e mudar as coisas
+- [ ] Enviar os programas para o Arduino
+- [ ] Fazer funcionar o circuito
+- [ ] Experimentar os sensores (verificar valores)
 
 ## Sugestões
-- [ ] -
+- [ ] Incompatibilidade entre programas
+- [ ] Avisar sem guardar
 
 ## Informações
 <table>
