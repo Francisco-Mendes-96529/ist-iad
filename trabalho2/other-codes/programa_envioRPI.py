@@ -31,6 +31,7 @@ def initArduino():
         
 def receber():
     for i in range(20):
+        Prog[i]['A'] = int(ser.readline().decode('utf-8').rstrip())
         for j in range(7):
             Prog[i]['D'][j] = int(ser.readline().decode('utf-8').rstrip())
         Prog[i]['Hi'] = int(ser.readline().decode('utf-8').rstrip())
@@ -40,10 +41,11 @@ def receber():
         for j in range(12):
             Prog[i]['Canal'][j] = int(ser.readline().decode('utf-8').rstrip())
         Prog[i]['Fonte'] = int(ser.readline().decode('utf-8').rstrip())
-        Prog[i]['Sensor'] = int(ser.readline().decode('utf-8').rstrip())
+        Prog[i]['Sensor'][0] = int(ser.readline().decode('utf-8').rstrip())
+        Prog[i]['Sensor'][1] = int(ser.readline().decode('utf-8').rstrip())
         
         
-Prog = [{'D':[0,0,0,0,0,0,0], "Hi":0, "Mi":0, "Hf":0, "Mf":0, "Canal":[0,0,0,0,0,0,0,0,0,0,0,0], "Fonte":0, "Sensor":0} for i in range(20)]
+Prog = [{'A':0, 'D':[0,0,0,0,0,0,0], "Hi":0, "Mi":0, "Hf":0, "Mf":0, "Canal":[0,0,0,0,0,0,0,0,0,0,0,0], "Fonte":0, "Sensor":[0,0]} for i in range(20)]
 
 ser = serial.Serial(dev_name, 9600, timeout=1)
 
