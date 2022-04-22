@@ -52,9 +52,9 @@ ser = serial.Serial(dev_name, 9600, timeout=1)
 ser.reset_input_buffer()  # Reset do buffer para dar a ordem ao Arduino
 initArduino()
 
-for k in range(20):
-    print("Progama",k)
-    print(Prog[k])
+# for k in range(20):
+#     print("Progama",k)
+#     print(Prog[k])
 # print("Progama",3)
 # print(Prog[2])
 
