@@ -7,6 +7,65 @@ import os
 from PyQt5 import QtWidgets, QtCore
 from pyqtgraph import PlotWidget, plot
 
+def initArduino():
+    while True:
+        line = ser.readline().decode('utf-8').rstrip()  # Ler e traduz o que foi enviado pelo Arduino
+        if line=="Arduino is ready":
+            print(line)
+            break
+        
+def receber():
+    for i in range(20):
+        Prog[i]['A'] = int(ser.readline().decode('utf-8').rstrip())
+        for j in range(7):
+            Prog[i]['D'][j] = int(ser.readline().decode('utf-8').rstrip())
+        Prog[i]['Hi'] = int(ser.readline().decode('utf-8').rstrip())
+        Prog[i]['Mi'] = int(ser.readline().decode('utf-8').rstrip())
+        Prog[i]['Hf'] = int(ser.readline().decode('utf-8').rstrip())
+        Prog[i]['Mf'] = int(ser.readline().decode('utf-8').rstrip())
+        for j in range(12):
+            Prog[i]['Canal'][j] = int(ser.readline().decode('utf-8').rstrip())
+        Prog[i]['Fonte'] = int(ser.readline().decode('utf-8').rstrip())
+        Prog[i]['Sensor'][0] = int(ser.readline().decode('utf-8').rstrip())
+        Prog[i]['Sensor'][1] = int(ser.readline().decode('utf-8').rstrip())
+        
+def enviar(int k):
+    ser.reset_input_buffer()  # Reset do buffer para dar a ordem ao Arduino
+    ser.write(Prog[k]['A'].encode('utf-8'))
+    for j in range(7):
+        ser.reset_input_buffer()  # Reset do buffer para dar a ordem ao Arduino
+        ser.write(Prog[k]['D'][j].encode('utf-8'))
+    ser.reset_input_buffer()  # Reset do buffer para dar a ordem ao Arduino
+    ser.write(Prog[k]['Hi'].encode('utf-8'))
+    ser.reset_input_buffer()  # Reset do buffer para dar a ordem ao Arduino
+    ser.write(Prog[k]['Mi'].encode('utf-8'))
+    ser.reset_input_buffer()  # Reset do buffer para dar a ordem ao Arduino
+    ser.write(Prog[k]['Hf'].encode('utf-8'))
+    ser.reset_input_buffer()  # Reset do buffer para dar a ordem ao Arduino
+    ser.write(Prog[k]['Mf'].encode('utf-8'))
+    for j in range(12):
+        ser.reset_input_buffer()  # Reset do buffer para dar a ordem ao Arduino
+        ser.write(Prog[k]['Canais'][j].encode('utf-8'))
+    ser.reset_input_buffer()  # Reset do buffer para dar a ordem ao Arduino
+    ser.write(Prog[k]['Fonte'].encode('utf-8'))
+    ser.reset_input_buffer()  # Reset do buffer para dar a ordem ao Arduino
+    ser.write(Prog[k]['Sensor'][0].encode('utf-8'))
+    ser.reset_input_buffer()  # Reset do buffer para dar a ordem ao Arduino
+    ser.write(Prog[k]['Sensor'][1].encode('utf-8'))
+
+# Definir porta para ligação ao Arduino (se não encontrar termina o programa)
+if os.path.exists('/dev/ttyACM0'):
+    dev_name = '/dev/ttyACM0'
+elif os.path.exists('/dev/ttyACM1'):
+    dev_name = '/dev/ttyACM1'
+elif os.path.exists('/dev/ttyACM2'):
+    dev_name = '/dev/ttyACM2'
+else:
+    print("Não foi encontrado o Arduino")
+    sys.exit()
+    
+Prog = [{'A':0, 'D':[0,0,0,0,0,0,0], "Hi":0, "Mi":0, "Hf":0, "Mf":0, "Canal":[0,0,0,0,0,0,0,0,0,0,0,0], "Fonte":0, "Sensor":[0,0]} for i in range(20)]
+
 # Classe da janela principal
 class MainWindow(QtWidgets.QMainWindow):
 
@@ -28,8 +87,10 @@ class MainWindow(QtWidgets.QMainWindow):
 
 # Drop down list Programas
         self.progList = QtWidgets.QComboBox(self)
-        self.progList.addItems(["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20"])
+        self.progList.addItems([str(i+1) for i in range(20)])
         self.progList.setGeometry(490, 0, 50, 50)
+        self.progList.currentIndexChanged.connect(self.progFunction)
+        
 # Labels    
         self.progLabel = QtWidgets.QLabel("Programa", self)
         self.diasLabel = QtWidgets.QLabel("Dias", self)
@@ -98,11 +159,49 @@ class MainWindow(QtWidgets.QMainWindow):
 # Botões Guardar e Ativo
         self.guardar = QtWidgets.QPushButton("Guardar",self)
         self.guardar.setGeometry(760,420,100,50)
+        self.guardar.clicked.connect(self.guardarFunction)
         self.ativo = QtWidgets.QPushButton("OFF",self)
         self.ativo.setCheckable(True)
         self.ativo.setGeometry(680,420,70,50)
         self.ativo.clicked.connect(self.on_off)
+        self.ativo.toggled.connect(self.on_off)
         self.ativo.setStyleSheet("background-color : rgb(255,100,100)") # set background color to red
+        
+# After Functions
+        self.progFunction()
+        
+# Funções        
+    def progFunction(self):
+        k = self.progList.currentIndex()
+        self.ativo.setChecked(Prog[k]['A'])
+        for i in range(7):
+            self.dia[i].setCheckState(Prog[k]['D'][i])
+        self.horaInicial.setValue(Prog[k]['Hi'])
+        self.minInicial.setValue(Prog[k]['Mi'])
+        self.horaFinal.setValue(Prog[k]['Hf'])
+        self.minFinal.setValue(Prog[k]['Mf'])
+        for i in range(12):
+            self.canais[i].setCheckState(Prog[k]['Canal'][i])
+        self.fonte1.setChecked(not Prog[k]['Fonte'])
+        self.fonte2.setChecked(Prog[k]['Fonte'])
+        self.sensor[0].setCheckState(Prog[k]['Sensor'][0])
+        self.sensor[1].setCheckState(Prog[k]['Sensor'][1])
+        enviar(k)
+        
+    def guardarFunction(self):
+        k = self.progList.currentIndex()
+        Prog[k]['A'] = self.ativo.isChecked()
+        for i in range(7):
+            Prog[k]['D'][i] = self.dia[i].checkState()
+        Prog[k]['Hi'] = self.horaInicial.value()
+        Prog[k]['Mi'] = self.minInicial.value()
+        Prog[k]['Hf'] = self.horaFinal.value()
+        Prog[k]['Mf'] = self.minFinal.value()
+        for i in range(12):
+            Prog[k]['Canal'][i] = self.canais[i].checkState()
+        Prog[k]['Fonte'] = self.fonte2.isChecked()
+        Prog[k]['Sensor'][0] = self.sensor[0].checkState()
+        Prog[k]['Sensor'][1] = self.sensor[1].checkState()
         
     def on_off(self):
         if self.ativo.isChecked():
@@ -117,6 +216,14 @@ class MainWindow(QtWidgets.QMainWindow):
 
 app = QtWidgets.QApplication(sys.argv)
 app.setStyleSheet("QLabel{font-size: 14pt;}" "QComboBox{font-size: 12pt;}" "QCheckBox{font-size: 12pt;}" "QRadioButton{font-size: 12pt;}" "QSpinBox{font-size: 12pt;}" "QPushButton{font-size: 12pt;}")
+
+ser = serial.Serial(dev_name, 9600, timeout=1)
+ser.reset_input_buffer()  # Reset do buffer para dar a ordem ao Arduino
+initArduino()
+
+ser.reset_input_buffer()  # Reset do buffer para dar a ordem ao Arduino
+ser.write('e'.encode('utf-8'))
+receber()
 
 main = MainWindow()
 main.show()  # Mostrar a janela
