@@ -38,3 +38,5 @@
 		<td>950</td>
   	</tr>
 </table>
+
+Digitos nas spinboxes: https://stackoverflow.com/questions/19172262/pyqt4-qspinbox-value-format
