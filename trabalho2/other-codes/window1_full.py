@@ -7,6 +7,13 @@ import os
 from PyQt5 import QtWidgets, QtCore
 from pyqtgraph import PlotWidget, plot
 
+#DEBUG
+DEBUG = True
+
+# Funções de comunicação com o Arduino
+def serialWrite(var):
+    ser.write((str(var)+"\n").encode('utf-8'))
+
 def initArduino():
     while True:
         line = ser.readline().decode('utf-8').rstrip()  # Ler e traduz o que foi enviado pelo Arduino
@@ -29,29 +36,32 @@ def receber():
         Prog[i]['Sensor'][0] = int(ser.readline().decode('utf-8').rstrip())
         Prog[i]['Sensor'][1] = int(ser.readline().decode('utf-8').rstrip())
         
-def enviar(int k):
+def enviar(k):
     ser.reset_input_buffer()  # Reset do buffer para dar a ordem ao Arduino
-    ser.write(Prog[k]['A'].encode('utf-8'))
+    ser.write('r'.encode('utf-8'))
+    print(ser.readline().decode('utf-8').rstrip())
+    serialWrite(k)
+    serialWrite(Prog[k]['A'])
     for j in range(7):
-        ser.reset_input_buffer()  # Reset do buffer para dar a ordem ao Arduino
-        ser.write(Prog[k]['D'][j].encode('utf-8'))
-    ser.reset_input_buffer()  # Reset do buffer para dar a ordem ao Arduino
-    ser.write(Prog[k]['Hi'].encode('utf-8'))
-    ser.reset_input_buffer()  # Reset do buffer para dar a ordem ao Arduino
-    ser.write(Prog[k]['Mi'].encode('utf-8'))
-    ser.reset_input_buffer()  # Reset do buffer para dar a ordem ao Arduino
-    ser.write(Prog[k]['Hf'].encode('utf-8'))
-    ser.reset_input_buffer()  # Reset do buffer para dar a ordem ao Arduino
-    ser.write(Prog[k]['Mf'].encode('utf-8'))
+        serialWrite(Prog[k]['D'][j])
+    serialWrite(Prog[k]['Hi'])
+    serialWrite(Prog[k]['Mi'])
+    serialWrite(Prog[k]['Hf'])
+    serialWrite(Prog[k]['Mf'])
     for j in range(12):
-        ser.reset_input_buffer()  # Reset do buffer para dar a ordem ao Arduino
-        ser.write(Prog[k]['Canais'][j].encode('utf-8'))
+        serialWrite(Prog[k]['Canal'][j])
+    serialWrite(Prog[k]['Fonte'])
+    serialWrite(Prog[k]['Sensor'][0])
+    serialWrite(Prog[k]['Sensor'][1])
+        
+def receber_k(k):
+    print("DEBUG")
     ser.reset_input_buffer()  # Reset do buffer para dar a ordem ao Arduino
-    ser.write(Prog[k]['Fonte'].encode('utf-8'))
-    ser.reset_input_buffer()  # Reset do buffer para dar a ordem ao Arduino
-    ser.write(Prog[k]['Sensor'][0].encode('utf-8'))
-    ser.reset_input_buffer()  # Reset do buffer para dar a ordem ao Arduino
-    ser.write(Prog[k]['Sensor'][1].encode('utf-8'))
+    ser.write('k'.encode('utf-8'))
+    serialWrite(k)
+    print(ser.readline().decode('utf-8').rstrip())
+    for i in range(27):
+        print(ser.readline().decode('utf-8').rstrip())
 
 # Definir porta para ligação ao Arduino (se não encontrar termina o programa)
 if os.path.exists('/dev/ttyACM0'):
@@ -64,7 +74,33 @@ else:
     print("Não foi encontrado o Arduino")
     sys.exit()
     
+    
+#variaveis globais
+lastProg = 0
+# Lista de 20 dicionários (programas)
 Prog = [{'A':0, 'D':[0,0,0,0,0,0,0], "Hi":0, "Mi":0, "Hf":0, "Mf":0, "Canal":[0,0,0,0,0,0,0,0,0,0,0,0], "Fonte":0, "Sensor":[0,0]} for i in range(20)]
+
+# SpinBox com 2 dígitos
+class DoubleDigitSpinBox(QtWidgets.QSpinBox):
+    def __init__(self, *args):
+       QtWidgets.QSpinBox.__init__(self, *args)
+
+    def textFromValue(self, value):
+       return "%02d" % value
+
+# classe de janelas secundárias
+class subWindow(QtWidgets.QWidget):
+    def createWindow(self,width,height):
+        parent = None
+        super(subWindow, self).__init__(parent)
+        self.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
+        self.setMinimumSize(width,height)
+        self.setMaximumSize(width,height)
+        # Centrar janela no ecrã
+        qtRectangle = self.frameGeometry()
+        centerPoint = QtWidgets.QDesktopWidget().availableGeometry().center()
+        qtRectangle.moveCenter(centerPoint)
+        self.move(qtRectangle.topLeft())
 
 # Classe da janela principal
 class MainWindow(QtWidgets.QMainWindow):
@@ -135,10 +171,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.fonte2.setGeometry(465, 380, 100, 50)
 
 # Hora inicial e final
-        self.horaInicial = QtWidgets.QSpinBox(self)
-        self.minInicial = QtWidgets.QSpinBox(self)
-        self.horaFinal = QtWidgets.QSpinBox(self)
-        self.minFinal = QtWidgets.QSpinBox(self)
+        self.horaInicial = DoubleDigitSpinBox(self)
+        self.minInicial = DoubleDigitSpinBox(self)
+        self.horaFinal = DoubleDigitSpinBox(self)
+        self.minFinal = DoubleDigitSpinBox(self)
         self.horaInicial.setGeometry(400,100,65,50)
         self.minInicial.setGeometry(480,100,65,50)
         self.doisPontosI.setGeometry(465,100,15,50)
@@ -157,53 +193,118 @@ class MainWindow(QtWidgets.QMainWindow):
         self.minFinal.setAlignment(QtCore.Qt.AlignCenter)
 
 # Botões Guardar e Ativo
-        self.guardar = QtWidgets.QPushButton("Guardar",self)
+        self.guardar = QtWidgets.QPushButton("Editar",self)
+        self.guardar.setCheckable(True)
         self.guardar.setGeometry(760,420,100,50)
-        self.guardar.clicked.connect(self.guardarFunction)
+        self.guardar.toggled.connect(self.guardarFunction)
         self.ativo = QtWidgets.QPushButton("OFF",self)
         self.ativo.setCheckable(True)
         self.ativo.setGeometry(680,420,70,50)
-        self.ativo.clicked.connect(self.on_off)
         self.ativo.toggled.connect(self.on_off)
-        self.ativo.setStyleSheet("background-color : rgb(255,100,100)") # set background color to red
+        
+# Botão debug
+        if DEBUG:
+            self.debugButton = QtWidgets.QPushButton("Debug",self)
+            self.debugButton.clicked.connect(self.debugFunction)
         
 # After Functions
         self.progFunction()
         
 # Funções        
     def progFunction(self):
+        global lastProg
         k = self.progList.currentIndex()
-        self.ativo.setChecked(Prog[k]['A'])
-        for i in range(7):
-            self.dia[i].setCheckState(Prog[k]['D'][i])
-        self.horaInicial.setValue(Prog[k]['Hi'])
-        self.minInicial.setValue(Prog[k]['Mi'])
-        self.horaFinal.setValue(Prog[k]['Hf'])
-        self.minFinal.setValue(Prog[k]['Mf'])
-        for i in range(12):
-            self.canais[i].setCheckState(Prog[k]['Canal'][i])
-        self.fonte1.setChecked(not Prog[k]['Fonte'])
-        self.fonte2.setChecked(Prog[k]['Fonte'])
-        self.sensor[0].setCheckState(Prog[k]['Sensor'][0])
-        self.sensor[1].setCheckState(Prog[k]['Sensor'][1])
-        enviar(k)
-        
+        if self.guardar.isChecked():
+            self.createNotSavedWindow()
+        else:
+            lastProg = k
+            self.ativo.setChecked(Prog[k]['A'])
+            for i in range(7):
+                self.dia[i].setChecked(Prog[k]['D'][i])
+            self.horaInicial.setValue(Prog[k]['Hi'])
+            self.minInicial.setValue(Prog[k]['Mi'])
+            self.horaFinal.setValue(Prog[k]['Hf'])
+            self.minFinal.setValue(Prog[k]['Mf'])
+            for i in range(12):
+                self.canais[i].setChecked(Prog[k]['Canal'][i])
+            self.fonte1.setChecked(not Prog[k]['Fonte'])
+            self.fonte2.setChecked(Prog[k]['Fonte'])
+            self.sensor[0].setChecked(Prog[k]['Sensor'][0])
+            self.sensor[1].setChecked(Prog[k]['Sensor'][1])
+            # disable buttons
+            for i in range(7):
+                self.dia[i].setEnabled(0)
+            self.horaInicial.setEnabled(0)
+            self.minInicial.setEnabled(0)
+            self.horaFinal.setEnabled(0)
+            self.minFinal.setEnabled(0)
+            for i in range(12):
+                self.canais[i].setEnabled(0)
+            self.fonte1.setEnabled(0)
+            self.fonte2.setEnabled(0)
+            self.sensor[0].setEnabled(0)
+            self.sensor[1].setEnabled(0)
+            
     def guardarFunction(self):
-        k = self.progList.currentIndex()
-        Prog[k]['A'] = self.ativo.isChecked()
+        if self.guardar.isChecked():
+            self.guardar.setText("Guardar")
+            for i in range(7):
+                self.dia[i].setEnabled(1)
+            self.horaInicial.setEnabled(1)
+            self.minInicial.setEnabled(1)
+            self.horaFinal.setEnabled(1)
+            self.minFinal.setEnabled(1)
+            for i in range(12):
+                self.canais[i].setEnabled(1)
+            self.fonte1.setEnabled(1)
+            self.fonte2.setEnabled(1)
+            self.sensor[0].setEnabled(1)
+            self.sensor[1].setEnabled(1)
+        else:
+            self.guardar.setText("Editar")
+            for i in range(7):
+                self.dia[i].setEnabled(0)
+            self.horaInicial.setEnabled(0)
+            self.minInicial.setEnabled(0)
+            self.horaFinal.setEnabled(0)
+            self.minFinal.setEnabled(0)
+            for i in range(12):
+                self.canais[i].setEnabled(0)
+            self.fonte1.setEnabled(0)
+            self.fonte2.setEnabled(0)
+            self.sensor[0].setEnabled(0)
+            self.sensor[1].setEnabled(0)
+        # Guardar programa
+            k = self.progList.currentIndex()
+            if  k == lastProg:
+                self.guardarProg(k)
+                
+    def guardarProg(self,index):
         for i in range(7):
-            Prog[k]['D'][i] = self.dia[i].checkState()
-        Prog[k]['Hi'] = self.horaInicial.value()
-        Prog[k]['Mi'] = self.minInicial.value()
-        Prog[k]['Hf'] = self.horaFinal.value()
-        Prog[k]['Mf'] = self.minFinal.value()
+            Prog[index]['D'][i] = int(self.dia[i].isChecked())
+        Prog[index]['Hi'] = self.horaInicial.value()
+        Prog[index]['Mi'] = self.minInicial.value()
+        Prog[index]['Hf'] = self.horaFinal.value()
+        Prog[index]['Mf'] = self.minFinal.value()
         for i in range(12):
-            Prog[k]['Canal'][i] = self.canais[i].checkState()
-        Prog[k]['Fonte'] = self.fonte2.isChecked()
-        Prog[k]['Sensor'][0] = self.sensor[0].checkState()
-        Prog[k]['Sensor'][1] = self.sensor[1].checkState()
+            Prog[index]['Canal'][i] = int(self.canais[i].isChecked())
+        Prog[index]['Fonte'] = int(self.fonte2.isChecked())
+        Prog[index]['Sensor'][0] = int(self.sensor[0].isChecked())
+        Prog[index]['Sensor'][1] = int(self.sensor[1].isChecked())
+        enviar(index)
+
         
     def on_off(self):
+        k = self.progList.currentIndex()
+        if not Prog[k]['A'] == int(self.ativo.isChecked()):
+            Prog[k]['A'] = int(self.ativo.isChecked())
+            # enviar ativo para o arduino
+            ser.reset_input_buffer()  # Reset do buffer para dar a ordem ao Arduino
+            ser.write('a'.encode('utf-8'))
+            print(ser.readline().decode('utf-8').rstrip())
+            serialWrite(k)
+            serialWrite(Prog[k]['A'])
+        
         if self.ativo.isChecked():
             # setting background color to green
             self.ativo.setStyleSheet("background-color : green")
@@ -213,6 +314,48 @@ class MainWindow(QtWidgets.QMainWindow):
             self.ativo.setStyleSheet("background-color : rgb(255,100,100)")
             self.ativo.setText("OFF")
    
+    def debugFunction(self):
+        receber_k(self.progList.currentIndex())
+        
+    def createNotSavedWindow(self):
+        self.notSavedWindow = subWindow()
+        self.notSavedWindow.createWindow(400,100)
+        self.notSavedWindow.setWindowTitle("Alterações não guardadas")
+        self.setEnabled(0)
+        # widgets
+        self.notSavedWindow.label = QtWidgets.QLabel("Pretende guardar as alterações efetuadas?", self.notSavedWindow)
+        self.notSavedWindow.guardar = QtWidgets.QPushButton("Guardar", self.notSavedWindow)
+        self.notSavedWindow.naoGuardar = QtWidgets.QPushButton("Não Guardar", self.notSavedWindow)
+        self.notSavedWindow.cancelar = QtWidgets.QPushButton("Cancelar", self.notSavedWindow)
+        # posições
+        self.notSavedWindow.label.move(20,20)
+        self.notSavedWindow.guardar.setGeometry(25,65,100,30)
+        self.notSavedWindow.naoGuardar.setGeometry(150,65,100,30)
+        self.notSavedWindow.cancelar.setGeometry(275,65,100,30)
+        # funções
+        self.notSavedWindow.guardar.clicked.connect(self.nSWguardar)
+        self.notSavedWindow.naoGuardar.clicked.connect(self.nSWnaoGuardar)
+        self.notSavedWindow.cancelar.clicked.connect(self.nSWcancelar)
+        self.notSavedWindow.show()
+        
+    def nSWguardar(self):
+        self.setEnabled(1)
+        self.guardar.setChecked(0)
+        self.guardarProg(lastProg)
+        self.progFunction()
+        self.notSavedWindow.hide()
+
+    def nSWnaoGuardar(self):
+        self.setEnabled(1)
+        self.guardar.setChecked(0)
+        self.progFunction()
+        self.notSavedWindow.hide()
+        
+    def nSWcancelar(self):
+        self.progList.setCurrentIndex(lastProg)
+        self.setEnabled(1)
+        self.notSavedWindow.hide()
+
 
 app = QtWidgets.QApplication(sys.argv)
 app.setStyleSheet("QLabel{font-size: 14pt;}" "QComboBox{font-size: 12pt;}" "QCheckBox{font-size: 12pt;}" "QRadioButton{font-size: 12pt;}" "QSpinBox{font-size: 12pt;}" "QPushButton{font-size: 12pt;}")
