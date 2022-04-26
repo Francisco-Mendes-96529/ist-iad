@@ -31,30 +31,45 @@ void loop() {
    int inByte = Serial.read();
    if (inByte=='e') enviar();
    if (inByte=='r') receber();
+   if (inByte=='k') enviar_k();
+   if (inByte=='a') receber_ativo();
   }
 }
 
 void receber(){
-  int k = int(Serial.read());
-  prog[k].ativo = int(Serial.read());
+  Serial.println("recebendo...");
+  Serial.flush();
+  int k = Serial.readStringUntil('\n').toInt();
+
+
+  prog[k].ativo = Serial.readStringUntil('\n').toInt();
   for (int j=0; j<7; j++)
     {
-      prog[k].d[j]=int(Serial.read());
+      prog[k].d[j]=Serial.readStringUntil('\n').toInt();
     }
-  prog[k].hi = int(Serial.read());
-  prog[k].mi = int(Serial.read());
-  prog[k].hf = int(Serial.read());
-  prog[k].mf = int(Serial.read());
+  prog[k].hi = Serial.readStringUntil('\n').toInt();
+  prog[k].mi = Serial.readStringUntil('\n').toInt();
+  prog[k].hf = Serial.readStringUntil('\n').toInt();
+  prog[k].mf = Serial.readStringUntil('\n').toInt();
   for (int j=0; j<12; j++)
     {
-      prog[k].canais[j]=int(Serial.read());
+      prog[k].canais[j]= Serial.readStringUntil('\n').toInt();
     }  
-  prog[k].fonte = int(Serial.read());
+  prog[k].fonte = Serial.readStringUntil('\n').toInt();
   for (int j=0; j<2; j++)
     {
-      prog[k].sensor[j]=int(Serial.read());
+      prog[k].sensor[j]= Serial.readStringUntil('\n').toInt();
     }
+    //Serial.println("acabou de receber");
 }
+
+void receber_ativo(){
+  Serial.println("recebendo ativo...");
+  Serial.flush();
+  int k = Serial.readStringUntil('\n').toInt();
+  prog[k].ativo = Serial.readStringUntil('\n').toInt();
+}
+
 void enviar(){
   for (int i=0; i<20; i++)
   {
@@ -85,4 +100,35 @@ void enviar(){
     Serial.println(prog[i].sensor[1]);
     Serial.flush();
   }  
+}
+
+void enviar_k(){  
+  int k = Serial.readStringUntil('\n').toInt();
+  Serial.println(k);
+    Serial.println(prog[k].ativo);
+    Serial.flush();
+    for (int j=0; j<7; j++)
+    {
+      Serial.println(prog[k].d[j]);
+      Serial.flush();
+    }
+    Serial.println(prog[k].hi);
+    Serial.flush();
+    Serial.println(prog[k].mi);
+    Serial.flush();
+    Serial.println(prog[k].hf);
+    Serial.flush();
+    Serial.println(prog[k].mf);
+    Serial.flush();
+    for (int j=0; j<12; j++)
+    {
+      Serial.println(prog[k].canais[j]);
+      Serial.flush();
+    }
+    Serial.println(prog[k].fonte);
+    Serial.flush();
+    Serial.println(prog[k].sensor[0]);
+    Serial.flush();
+    Serial.println(prog[k].sensor[1]);
+    Serial.flush(); 
 }
