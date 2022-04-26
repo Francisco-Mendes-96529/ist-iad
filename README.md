@@ -16,6 +16,7 @@
 - [ ] Incompatibilidade entre programas
 - [ ] Janela notSaved, fechar = cancelar
 - [ ] Janela notSaved, bloquear X da MainWindow
+- [ ] "overwrite" do tempo
 
 ## Informações
 <table>
