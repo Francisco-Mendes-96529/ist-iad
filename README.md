@@ -7,13 +7,13 @@
 - [X] Estrutura com os programas
 - [X] Ras.PI - Editar os programas com botões
 - [X] Ler os programas e mudar as coisas
-- [ ] Enviar os programas para o Arduino
+- [X] Enviar os programas para o Arduino
 - [ ] Fazer funcionar o circuito
 - [X] Experimentar os sensores (verificar valores)
+- [ ] Avisar se mudar de prog sem guardar
 
 ## Sugestões
 - [ ] Incompatibilidade entre programas
-- [ ] Avisar sem guardar
 
 ## Informações
 <table>
