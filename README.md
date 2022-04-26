@@ -10,10 +10,12 @@
 - [X] Enviar os programas para o Arduino
 - [ ] Fazer funcionar o circuito
 - [X] Experimentar os sensores (verificar valores)
-- [ ] Avisar se mudar de prog sem guardar
+- [X] Avisar se mudar de prog sem guardar
 
 ## Sugestões
 - [ ] Incompatibilidade entre programas
+- [ ] Janela notSaved, fechar = cancelar
+- [ ] Janela notSaved, bloquear X da MainWindow
 
 ## Informações
 <table>
