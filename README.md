@@ -18,6 +18,7 @@
 - [ ] Janela notSaved, bloquear X da MainWindow
 - [ ] "overwrite" do tempo
 
+
 ## Informações
 <table>
 	<caption>Valores vistos na net</caption>
@@ -76,6 +77,5 @@
 		<td>523</td>
   	</tr>
 </table>
-
 
 Digitos nas spinboxes: https://stackoverflow.com/questions/19172262/pyqt4-qspinbox-value-format

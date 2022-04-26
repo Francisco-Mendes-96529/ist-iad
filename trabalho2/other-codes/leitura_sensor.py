@@ -126,8 +126,6 @@ class MainWindow(QtWidgets.QMainWindow):
             print("buffer invalido")
             
         if is_float(number):  # Testar se valor lido pelo Arduino é float
-            print(number)
-            
             self.x = self.x[1:]  # Remove the first x element.
             self.x.append(self.x[-1] + 0.05)  # Add a new value 0.05s higher than the last.
 
@@ -136,6 +134,14 @@ class MainWindow(QtWidgets.QMainWindow):
 
             self.data_line.setData(self.x, self.y)  # Update the data.
             self.graphWidget.setYRange(0,1023)
+            
+            soma = 0
+            for i in range(200):
+                soma += self.y[i]
+            media = float(soma)/200
+            strprint = str(number)+" -- "+str(media)
+            print(strprint)
+            
         else:
             print("Not a float")
             print(number)
