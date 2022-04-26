@@ -6,26 +6,31 @@
 - [X] Confirmar leitura do tempo
 - [X] Estrutura com os programas
 - [X] Ras.PI - Editar os programas com botões
-- [ ] Ler os programas e mudar as coisas
-- [ ] Enviar os programas para o Arduino
+- [X] Ler os programas e mudar as coisas
+- [X] Enviar os programas para o Arduino
 - [ ] Fazer funcionar o circuito
-- [ ] Experimentar os sensores (verificar valores)
+- [X] Experimentar os sensores (verificar valores)
+- [X] Avisar se mudar de prog sem guardar
 
 ## Sugestões
 - [ ] Incompatibilidade entre programas
-- [ ] Avisar sem guardar
+- [ ] Janela notSaved, fechar = cancelar
+- [ ] Janela notSaved, bloquear X da MainWindow
+- [ ] "overwrite" do tempo
+
 
 ## Informações
 <table>
+	<caption>Valores vistos na net</caption>
 	<tr>
 		<th>Sensor in</th>
 		<th>3.3 V</th>
 		<th>5 V</th>
   	</tr>
   	<tr>
-    	<td>Dry soil</td>
-    	<td>0</td>
-    	<td>300</td>
+    		<td>Dry soil</td>
+    		<td>0</td>
+    		<td>300</td>
   	</tr>
   	<tr>
 		<td>Humid soil</td>
@@ -36,6 +41,40 @@
 		<td>Water</td>
 		<td>700</td>
 		<td>950</td>
+  	</tr>
+</table>
+
+<table>
+	<caption>Valores experimentais</caption>
+	<tr>
+		<th>Sensor in</th>
+		<th>3.3 V</th>
+		<th>5 V</th>
+  	</tr>
+  	<tr>
+    		<td>Air</td>
+    		<td>407</td>
+    		<td>757</td>
+  	</tr>
+  	<tr>
+		<td>Dry soil</td>
+		<td>347</td>
+		<td>740</td>
+  	</tr>
+  	<tr>
+		<td>Semi-humid soil</td>
+		<td>307</td>
+		<td>712</td>
+  	</tr>
+  	<tr>
+		<td>Humid soil</td>
+		<td>262</td>
+		<td>546</td>
+  	</tr>
+  	<tr>
+		<td>Water</td>
+		<td>253</td>
+		<td>523</td>
   	</tr>
 </table>
 
