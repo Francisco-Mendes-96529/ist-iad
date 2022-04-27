@@ -5,7 +5,7 @@ import pyqtgraph as pg
 import sys  
 import os
 from PyQt5 import QtWidgets, QtCore
-from pyqtgraph import PlotWidget, plot
+import time
 
 #DEBUG
 DEBUG = True
@@ -16,6 +16,7 @@ def serialWrite(var):
 
 def initArduino():
     while True:
+#         serial.write('i'.encode('utf-8'))
         line = ser.readline().decode('utf-8').rstrip()  # Ler e traduz o que foi enviado pelo Arduino
         if line=="Arduino is ready":
             print(line)
@@ -62,6 +63,27 @@ def receber_k(k):
     print(ser.readline().decode('utf-8').rstrip())
     for i in range(27):
         print(ser.readline().decode('utf-8').rstrip())
+
+def initTempo():
+    today = time.strftime("%w, %H:%M:%S")
+    ser.reset_input_buffer()  # Reset do buffer para dar a ordem ao Arduino
+    ser.write(today.encode('utf-8'))
+    while True:
+        line = ser.readline().decode('utf-8').rstrip()  # Ler e traduz o que foi enviado pelo Arduino
+        if line=="LEITURA VALIDA":
+            print(line)
+            break
+        elif line=="LEITURA INVALIDA":
+            today = time.strftime("%w, %H:%M:%S")
+            ser.reset_input_buffer()  # Reset do buffer para dar a ordem ao Arduino
+            ser.write(today.encode('utf-8'))
+
+def debugTempo():
+    ser.reset_input_buffer()  # Reset do buffer para dar a ordem ao Arduino
+    ser.write('T'.encode('utf-8'))
+    line = ser.readline().decode('utf-8').rstrip()  # Ler e traduz o que foi enviado pelo Arduino
+    print(line)
+
 
 # Definir porta para ligação ao Arduino (se não encontrar termina o programa)
 if os.path.exists('/dev/ttyACM0'):
@@ -374,6 +396,7 @@ class MainWindow(QtWidgets.QMainWindow):
         
     def debugFunction(self):
         receber_k(self.progList.currentIndex())
+        debugTempo()
 
 
 app = QtWidgets.QApplication(sys.argv)
@@ -386,6 +409,10 @@ initArduino()
 ser.reset_input_buffer()  # Reset do buffer para dar a ordem ao Arduino
 ser.write('e'.encode('utf-8'))
 receber()
+
+ser.reset_input_buffer()  # Reset do buffer para dar a ordem ao Arduino
+ser.write('t'.encode('utf-8'))
+initTempo()
 
 main = MainWindow()
 main.show()  # Mostrar a janela
