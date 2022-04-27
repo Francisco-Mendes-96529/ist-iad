@@ -1,3 +1,5 @@
+
+
 struct Programa{
   int ativo=0; //0-false, 1-true
   int d[7]={0,0,0,0,0,0,0}; //dia 0-false 2-true
@@ -8,6 +10,9 @@ struct Programa{
   int sensor[2]={0,0}; // 0-false 2-true
 }prog[20];
 
+int dia, hora, mins, seg;
+unsigned long start_time=0, curr_time=0, ant_time=0;
+unsigned long seg_atual=0, seg_atual_max=604800;
 int canal_pin[12]={2,3,4,5,6,7,8,9,10,11,12,13};
 int nivel_humidade[2]={0,0}; //variável que guarda a voltagem lida pelo sensor
 bool al3 = 1;
@@ -43,17 +48,20 @@ void setup() {
 void loop() {
   if(Serial.available()>0){
    int inByte = Serial.read();
+   if (inByte=='t') tempo();
+   if (inByte=='T') enviar_tempo();
    if (inByte=='e') enviar();
    if (inByte=='r') receber();
    if (inByte=='k') enviar_k();
-   if (inByte=='a') receber_ativo();  
+   if (inByte=='a') receber_ativo(); 
+   //if (inByte=='i') 
   }
   for(int i = 0; i<12; i++){
     digitalWrite(canal_pin[i], prog[0].canais[i]);  
   }
   //digitalWrite(A0, sensor[0]);
   //digitalWrite(A1, sensor[1]);
-  for(int i=0; i<2; i++){
+ /* for(int i=0; i<2; i++){
     if(nivel_humidade[i] >= 377*al3 + 749*al5 && nivel_humidade[i] <= 437*al3 + 807*al5){
       Serial.println("Ar");
     }
@@ -72,12 +80,55 @@ void loop() {
     else{
       Serial.println("Valor lido inválido. Verifique a qualidade do sensor.");
     }  
-  }
+  }*/
    
   digitalWrite(A2, !prog[0].fonte);
-  digitalWrite(A3, prog[0].fonte); 
+  digitalWrite(A3, prog[0].fonte);
+  tempo_atual();
 }
 
+void tempo() {
+  while (true) {
+    if(Serial.available()>0){
+      String data = Serial.readStringUntil('\n');
+      int t = sscanf(data.c_str(), "%d, %d:%d:%d", &dia, &hora, &mins, &seg);
+      if (t==4){
+        Serial.println("LEITURA VALIDA");
+        seg_atual=converter_tempo(dia,hora,mins,seg);
+        start_time=millis()/1000;
+        ant_time = start_time;
+        break;
+      }
+      else Serial.println("LEITURA INVALIDA");
+      Serial.flush();
+    }
+  }
+}
+
+ unsigned long converter_tempo(int d, int h, int m ,int s) {
+return d*86400+m*60+s+h*3600UL;
+}
+void tempo_atual(){
+  curr_time=millis()/1000;
+  unsigned long diff_times=curr_time-ant_time;
+  seg_atual += diff_times;
+  while (seg_atual>=seg_atual_max) seg_atual -=seg_atual_max;
+  ant_time = curr_time;
+}
+
+void enviar_tempo(){
+  //tempo_atual();
+  unsigned long temp_seg_atual = seg_atual;
+  unsigned long temp_dia=temp_seg_atual/(86400);
+  temp_seg_atual -= temp_dia*24*3600;
+  unsigned long temp_hora=temp_seg_atual/3600;
+  temp_seg_atual -= temp_hora*(3600);
+  unsigned long temp_min=temp_seg_atual/60;
+  unsigned long temp_seg= temp_seg_atual-temp_min*60;
+  String strtempo =  " -- Dia: " + String(dia) + " -- " + String(hora) + ":" + String(mins) + ":" + String(seg) + " Seg_atual: " + String(seg_atual) + " -- Dia: " + String(temp_dia) + " -- " + String(temp_hora) + ":" + String(temp_min) + ":" + String(temp_seg);
+  Serial.println(strtempo);
+  Serial.flush();
+}
 void receber(){
   Serial.println("recebendo...");
   Serial.flush();
