@@ -14,8 +14,8 @@
 
 ## Sugestões
 - [ ] Incompatibilidade entre programas
-- [ ] Janela notSaved, fechar = cancelar
-- [ ] Janela notSaved, bloquear X da MainWindow
+- [X] Janela notSaved, fechar = cancelar
+- [X] Janela notSaved, bloquear X da MainWindow
 - [ ] "overwrite" do tempo
 
 
