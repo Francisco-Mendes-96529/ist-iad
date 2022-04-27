@@ -8,12 +8,14 @@
 - [X] Ras.PI - Editar os programas com botões
 - [X] Ler os programas e mudar as coisas
 - [X] Enviar os programas para o Arduino
-- [ ] Fazer funcionar o circuito
+- [X] Fazer funcionar o circuito
 - [X] Experimentar os sensores (verificar valores)
 - [X] Avisar se mudar de prog sem guardar
+- [ ] Incompatibilidade entre programas (horário&canais, fonte&horario)
+- [ ] Guardar prog num ficheiro
+- [ ] sensores
 
 ## Sugestões
-- [ ] Incompatibilidade entre programas
 - [X] Janela notSaved, fechar = cancelar
 - [X] Janela notSaved, bloquear X da MainWindow
 - [ ] "overwrite" do tempo
