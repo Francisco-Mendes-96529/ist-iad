@@ -209,8 +209,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.fonteLabel.setGeometry(415, 340, 100, 50)
         
 # Checkboxes dias - Permite selecionar os dias 
-        self.diaName = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"]
-        self.dia = [QtWidgets.QCheckBox(self.diaName[i], self)for i in range(7)]
+        diaName = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"]
+        self.dia = [QtWidgets.QCheckBox(diaName[i], self)for i in range(7)]
         for i in range(7):
             self.dia[i].setGeometry(75, 50*i+100, 110, 50)
         
@@ -264,11 +264,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ativo.toggled.connect(self.on_off)
         self.ativo.setStyleSheet("background-color : rgb(255,100,100)") # VERMELHO
 
-# Botão que mostra os programas ativos
-        self.progAtivosButton = QtWidgets.QPushButton("Info\nProgramas",self)
-        self.progAtivosButton.clicked.connect(self.progAtivosFunction)
-        self.progAtivosButton.setGeometry(800,0,100,60)
-
 # Botão debug
         if DEBUG:
             self.debugButton = QtWidgets.QPushButton("Debug",self)
@@ -277,13 +272,12 @@ class MainWindow(QtWidgets.QMainWindow):
 # After Functions
         self.createNotSavedWindow() #Cria a janela de aviso quando há alterações não guardadas
         self.createWarningWindow() #Cria a janela de aviso quando há conflitos dentro de um programa ou entre programas
-        #self.createInfoWindow() #Cria a janela de informação de programas
         self.varCloseEvent = 0 # = 1 quando estamos a editar e tentamos fechar a mainWindow
         self.progFunction()
         
 # Funções
     def closeEvent(self, event):
-        if self.notSavedWindow.isVisible() or self.warningWindow.isVisible() or self.infoWindow.isVisible(): # Se uma janela secundária estiver visivel, ignora a tentativa de encerro da main window
+        if self.notSavedWindow.isVisible() or self.warningWindow.isVisible(): # Se uma janela secundária estiver visivel, ignora a tentativa de encerro da main window
             event.ignore()
         elif self.guardar.isChecked(): #Há alterações por guardar
             self.varCloseEvent = 1
@@ -548,69 +542,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setEnabled(1)
         self.notSavedWindow.hide()
         self.varCloseEvent = 0
-    
-    def createInfoWindow(self,width,height): #criar a janela de alterações não guardadas
-        self.infoWindow = subWindow()
-        self.infoWindow.createWindow(width,height)
-        self.infoWindow.setWindowTitle("Info")
-        # widgets
-        self.infoWindow.label1 = QtWidgets.QLabel(self.infoWindow)
-        self.infoWindow.label2 = QtWidgets.QLabel(self.infoWindow)
-        self.infoWindow.label1.setStyleSheet("font-size:10.75pt;")
-        self.infoWindow.label2.setStyleSheet("font-size:10.75pt;")
-        self.infoWindow.ok = QtWidgets.QPushButton("OK", self.infoWindow)
-        # posições
-        self.infoWindow.label1.move(20,10)
-        self.infoWindow.ok.setGeometry(0,0,100,30)
-        # funções
-        self.infoWindow.ok.clicked.connect(self.okprogAtivos)
-        
-    def progAtivosFunction(self):
-        self.setEnabled(0)
-        nAtivos=0
-        n10Ativos=1
-        label=""
-        label1=""
-        for i in range(20):
-            if Prog[i]['A']:
-                nAtivos+=1
-                if nAtivos == 11:
-                    n10Ativos=2
-                    label1=label
-                    label=""
-                label+="Programa %d:\n" %(i+1)
-                label+="Dias: "
-                for j in range(7):
-                    if Prog[i]['D'][j]:
-                        label+=self.diaName[j]+ ", "
-                label+="\nInicio: %02d:%02d -- Fim: %02d:%02d" %(Prog[i]['Hi'], Prog[i]['Mi'],Prog[i]['Hf'],Prog[i]['Mf'])
-                label+=" ---- Canais: "
-                for j in range(12):
-                    if Prog[i]['Canal'][j]:
-                        label+= "%d, " %(j+1)
-                label+="\nSensores: "
-                for j in range(2):
-                    if Prog[i]['Sensor'][j]:
-                        label+= "%d, " %(j+1)
-                label+=" ---- Fonte: "
-                if Prog[i]['Fonte']:
-                    label+="Bomba\n\n"
-                else: label+="Torneira\n\n"
-        self.createInfoWindow(450*n10Ativos,100+min(nAtivos*110,900))
-        self.infoWindow.ok.move(int(450*n10Ativos/2)-50,60+min(nAtivos*110,900))
-        if nAtivos > 10:
-            self.infoWindow.label1.setText(label1)
-            self.infoWindow.label2.setText(label)
-            self.infoWindow.label2.move(470,10)
-        else:
-            self.infoWindow.label1.setText(label)
-        
-        self.infoWindow.show()
                 
-    def okprogAtivos(self):
-        self.setEnabled(1) #ativar a main
-        self.infoWindow.hide() # esconder a janela de info
-            
     def debugFunction(self):
         print("DEBUG")
         receber_k(self.progList.currentIndex())
