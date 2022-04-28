@@ -11,7 +11,7 @@
 - [X] Fazer funcionar o circuito
 - [X] Experimentar os sensores (verificar valores)
 - [X] Avisar se mudar de prog sem guardar
-- [ ] Incompatibilidade entre programas (horário&canais, fonte&horario)
+- [ ] Incompatibilidade entre programas (horario inicial&final, horário&canais, fonte&horario)
 - [X] Guardar prog num ficheiro
 - [X] sensores
 
