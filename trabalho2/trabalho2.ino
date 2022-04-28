@@ -152,7 +152,7 @@ void tempo(){ // função que recebe o tempo inicial do Raspberry Pi
 void tempo_atual(){ //função que atualiza o tempo 
   curr_time=millis()/1000; //segundos desde que o Arduino ligou
   unsigned long diff_time=curr_time-ant_time; 
-  if(diff_time<0) diff_time = ULONG_MAX/1000 - ant_time + curr_time;
+  if(diff_time<0) diff_time = 4294967295/1000 - ant_time + curr_time;
   seg_atual += diff_time;
   while (seg_atual>=60){
     seg_atual -= 60;
