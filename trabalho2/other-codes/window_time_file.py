@@ -8,7 +8,25 @@ from PyQt5 import QtWidgets, QtCore
 import time
 
 #DEBUG
-DEBUG = True
+DEBUG = False
+
+# Definir porta para ligação ao Arduino (se não encontrar termina o programa)
+if os.path.exists('/dev/ttyACM0'):
+    dev_name = '/dev/ttyACM0'
+elif os.path.exists('/dev/ttyACM1'):
+    dev_name = '/dev/ttyACM1'
+elif os.path.exists('/dev/ttyACM2'):
+    dev_name = '/dev/ttyACM2'
+else:
+    print("Não foi encontrado o Arduino")
+    sys.exit()
+     
+#variaveis globais
+lastProg = 0
+my_file = 'progs_rega.txt' #ficheiro de texto que guarda a informação dos programas
+# Lista de 20 dicionários (programas)
+Prog = [{'A':0, 'D':[0,0,0,0,0,0,0], "Hi":0, "Mi":0, "Hf":0, "Mf":0, "Canal":[0,0,0,0,0,0,0,0,0,0,0,0], "Fonte":0, "Sensor":[0,0]} for i in range(20)]
+
 
 # Funções de comunicação com o Arduino
 def serialWrite(var):
@@ -16,31 +34,62 @@ def serialWrite(var):
 
 def initArduino():
     while True:
-#         serial.write('i'.encode('utf-8'))
         line = ser.readline().decode('utf-8').rstrip()  # Ler e traduz o que foi enviado pelo Arduino
         if line=="Arduino is ready":
-            print(line)
+            if DEBUG: print(line)
             break
         
-def receber():
+def read_file():
+    if os.path.isfile(my_file):
+        f = open(my_file, "r")
+        data = f.readlines()
+        for i in range(20):
+            Prog[i]['A'] = int(data[1+i*9].split()[1])
+            temp = data[2+i*9].split()
+            for j in range(7):
+                Prog[i]['D'][j] = int(temp[j+1])
+            temp = data[3+i*9].split()
+            Prog[i]['Hi'] = int(temp[1])
+            Prog[i]['Mi'] = int(temp[2])
+            temp = data[4+i*9].split()
+            Prog[i]['Hf'] = int(temp[1])
+            Prog[i]['Mf'] = int(temp[2])
+            temp = data[5+i*9].split()
+            for j in range(12):
+                Prog[i]['Canal'][j] = int(temp[j+1])
+            Prog[i]['Fonte'] = int(data[6+i*9].split()[1])
+            temp = data[7+i*9].split()
+            Prog[i]['Sensor'][0] = int(temp[1])
+            Prog[i]['Sensor'][1] = int(temp[2])
+        f.close()
+        if DEBUG: print("leitura sucedida")
+    else:
+        save_file()
+
+def save_file():
+    f = open(my_file,"wt")
     for i in range(20):
-        Prog[i]['A'] = int(ser.readline().decode('utf-8').rstrip())
+        f.write("Prog: "+str(i+1)+"\n")
+        f.write("Ativo: "+str(Prog[i]['A'])+"\n")
+        f.write("Dias:")
         for j in range(7):
-            Prog[i]['D'][j] = int(ser.readline().decode('utf-8').rstrip())
-        Prog[i]['Hi'] = int(ser.readline().decode('utf-8').rstrip())
-        Prog[i]['Mi'] = int(ser.readline().decode('utf-8').rstrip())
-        Prog[i]['Hf'] = int(ser.readline().decode('utf-8').rstrip())
-        Prog[i]['Mf'] = int(ser.readline().decode('utf-8').rstrip())
+            f.write(" "+str(Prog[i]['D'][j]))
+        f.write("\n")
+        f.write("Hi: "+str(Prog[i]['Hi'])+" "+str(Prog[i]['Mi'])+"\n")
+        f.write("Hf: "+str(Prog[i]['Hf'])+" "+str(Prog[i]['Mf'])+"\n")
+        f.write("Canais:")
         for j in range(12):
-            Prog[i]['Canal'][j] = int(ser.readline().decode('utf-8').rstrip())
-        Prog[i]['Fonte'] = int(ser.readline().decode('utf-8').rstrip())
-        Prog[i]['Sensor'][0] = int(ser.readline().decode('utf-8').rstrip())
-        Prog[i]['Sensor'][1] = int(ser.readline().decode('utf-8').rstrip())
-        
+            f.write(" "+str(Prog[i]['Canal'][j]))
+        f.write("\n")
+        f.write("Fonte: "+str(Prog[i]['Fonte'])+"\n")
+        f.write("Sensores: "+str(Prog[i]['Sensor'][0])+" "+str(Prog[i]['Sensor'][1])+"\n")
+        f.write("\n")
+    f.close()
+
 def enviar(k):
     ser.reset_input_buffer()  # Reset do buffer para dar a ordem ao Arduino
     ser.write('r'.encode('utf-8'))
-    print(ser.readline().decode('utf-8').rstrip())
+    if DEBUG: print(ser.readline().decode('utf-8').rstrip())
     serialWrite(k)
     serialWrite(Prog[k]['A'])
     for j in range(7):
@@ -70,7 +119,7 @@ def initTempo():
     while True:
         line = ser.readline().decode('utf-8').rstrip()  # Ler e traduz o que foi enviado pelo Arduino
         if line=="LEITURA VALIDA":
-            print(line)
+            if DEBUG: print("leitura do tempo sucedida")
             break
         elif line=="LEITURA INVALIDA":
             today = time.strftime("%w, %H:%M:%S")
@@ -83,23 +132,15 @@ def debugTempo():
     line = ser.readline().decode('utf-8').rstrip()  # Ler e traduz o que foi enviado pelo Arduino
     print(line)
 
+def debugSensores():
+    ser.reset_input_buffer()  # Reset do buffer para dar a ordem ao Arduino
+    ser.write('s'.encode('utf-8'))
+    line = ser.readline().decode('utf-8').rstrip()  # Ler e traduz o que foi enviado pelo Arduino
+    print("Sensor 1: "+line)
+    line = ser.readline().decode('utf-8').rstrip()  # Ler e traduz o que foi enviado pelo Arduino
+    print("Sensor 2: "+line)
 
-# Definir porta para ligação ao Arduino (se não encontrar termina o programa)
-if os.path.exists('/dev/ttyACM0'):
-    dev_name = '/dev/ttyACM0'
-elif os.path.exists('/dev/ttyACM1'):
-    dev_name = '/dev/ttyACM1'
-elif os.path.exists('/dev/ttyACM2'):
-    dev_name = '/dev/ttyACM2'
-else:
-    print("Não foi encontrado o Arduino")
-    sys.exit()
-    
-    
-#variaveis globais
-lastProg = 0
-# Lista de 20 dicionários (programas)
-Prog = [{'A':0, 'D':[0,0,0,0,0,0,0], "Hi":0, "Mi":0, "Hf":0, "Mf":0, "Canal":[0,0,0,0,0,0,0,0,0,0,0,0], "Fonte":0, "Sensor":[0,0]} for i in range(20)]
+
 
 # SpinBox com 2 dígitos
 class DoubleDigitSpinBox(QtWidgets.QSpinBox):
@@ -222,20 +263,22 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ativo.setCheckable(True)
         self.ativo.setGeometry(680,420,70,50)
         self.ativo.toggled.connect(self.on_off)
-        
+        self.ativo.setStyleSheet("background-color : rgb(255,100,100)")
+
 # Botão debug
         if DEBUG:
             self.debugButton = QtWidgets.QPushButton("Debug",self)
             self.debugButton.clicked.connect(self.debugFunction)
         
 # After Functions
-        self.progFunction()
         self.createNotSavedWindow()
+        self.createWarningWindow()
         self.varCloseEvent = 0 # = 1 quando estamos a editar e tentamos fechar a mainWindow
+        self.progFunction()
         
 # Funções
     def closeEvent(self, event):
-        if self.notSavedWindow.isVisible():
+        if self.notSavedWindow.isVisible() or self.warningWindow.isVisible():
             event.ignore()
         elif self.guardar.isChecked():
             self.varCloseEvent = 1
@@ -243,14 +286,16 @@ class MainWindow(QtWidgets.QMainWindow):
             self.notSavedWindow.show()
             event.ignore()
         else:
+            save_file()
             event.accept()
         
     def progFunction(self):
         global lastProg
         k = self.progList.currentIndex()
         if self.guardar.isChecked():
-            self.setEnabled(0)
-            self.notSavedWindow.show()
+            if not self.warningWindow.isVisible():
+                self.setEnabled(0)
+                self.notSavedWindow.show()
         else:
             lastProg = k
             self.ativo.setChecked(Prog[k]['A'])
@@ -309,36 +354,116 @@ class MainWindow(QtWidgets.QMainWindow):
             self.fonte2.setEnabled(0)
             self.sensor[0].setEnabled(0)
             self.sensor[1].setEnabled(0)
-        # Guardar programa
+            
             k = self.progList.currentIndex()
-            if  k == lastProg and not self.varCloseEvent:
+            if  k == lastProg and not self.varCloseEvent: # quando se fecha a janela e depois se cancela, guardava
                 self.guardarProg(k)
                 
     def guardarProg(self,index):
-        for i in range(7):
-            Prog[index]['D'][i] = int(self.dia[i].isChecked())
-        Prog[index]['Hi'] = self.horaInicial.value()
-        Prog[index]['Mi'] = self.minInicial.value()
-        Prog[index]['Hf'] = self.horaFinal.value()
-        Prog[index]['Mf'] = self.minFinal.value()
-        for i in range(12):
-            Prog[index]['Canal'][i] = int(self.canais[i].isChecked())
-        Prog[index]['Fonte'] = int(self.fonte2.isChecked())
-        Prog[index]['Sensor'][0] = int(self.sensor[0].isChecked())
-        Prog[index]['Sensor'][1] = int(self.sensor[1].isChecked())
-        enviar(index)
-
+        if self.comparar():
+            for i in range(7):
+                Prog[index]['D'][i] = int(self.dia[i].isChecked())
+            Prog[index]['Hi'] = self.horaInicial.value()
+            Prog[index]['Mi'] = self.minInicial.value()
+            Prog[index]['Hf'] = self.horaFinal.value()
+            Prog[index]['Mf'] = self.minFinal.value()
+            for i in range(12):
+                Prog[index]['Canal'][i] = int(self.canais[i].isChecked())
+            Prog[index]['Fonte'] = int(self.fonte2.isChecked())
+            Prog[index]['Sensor'][0] = int(self.sensor[0].isChecked())
+            Prog[index]['Sensor'][1] = int(self.sensor[1].isChecked())
+            enviar(index)
+        else:
+            self.guardar.setChecked(1)
         
+    
+    def comparar(self) -> bool:
+        hInicio = "%02d%02d" % (self.horaInicial.value(), self.minInicial.value())
+        hFim = "%02d%02d" % (self.horaFinal.value(), self.minFinal.value())
+        if DEBUG: print(hFim == '0000')
+        if hFim > hInicio or hFim == "0000":
+            dia_test = 0
+            canal_test = 0
+            for i in range(7):
+                dia_test = self.dia[i].isChecked()
+                if dia_test: break
+            for i in range(12):
+                canal_test = self.canais[i].isChecked()
+                if canal_test: break
+            if dia_test and canal_test:
+                if self.ativo.isChecked():
+                    canal_list = []
+                    fonte_list = []
+                    for i in range(20):
+                        if Prog[i]['A'] and not i == lastProg:
+                            dia_test = 0
+                            if DEBUG: print(dia_test)
+                            for j in range(7):
+                                if self.dia[j].isChecked() and Prog[i]['D'][j]:
+                                    if DEBUG: print(j)
+                                    dia_test = 1
+                                    break
+                            hI2 = "%02d%02d" % (Prog[i]['Hi'], Prog[i]['Mi'])
+                            hF2 = "%02d%02d" % (Prog[i]['Hf'], Prog[i]['Mf'])
+                            if (hInicio < hF2 or hF2=="0000") and (hI2 < hFim or hFim=="0000") and dia_test:
+                                canal_test = 0
+                                for j in range(12):
+                                    if self.canais[j].isChecked() and Prog[i]['Canal'][j]:
+                                        # sobreposição de canais&horas
+                                        canal_test = 1
+                                if canal_test:
+                                    canal_list.append(i+1)
+                                if self.fonte2.isChecked() != Prog[i]['Fonte']:
+                                    # sobreposição de fontes&horas
+                                    fonte_list.append(i+1)
+                    if not len(canal_list)==0 or not len(fonte_list)==0:
+                        label = "AVISO\n\nPrograma atual tem conflitos com os seguintes:"
+                        if not len(canal_list)==0:
+                            if DEBUG: print(canal_list)
+                            label += "\nnos canais:"
+                            for k in range(len(canal_list)): label += " %d," % canal_list[k]
+                            label = label[:-1]
+                        if not len(fonte_list)==0:
+                            if DEBUG: print(fonte_list)
+                            label += "\nnas fontes:"
+                            for k in range(len(fonte_list)): label += " %d," % fonte_list[k]
+                            label = label[:-1]
+                        label += "\n\nEfetue as alterações necessárias."
+                        self.warningWindow.label.setText(label)
+                        self.setEnabled(0)
+                        self.warningWindow.show()
+                        return False    
+            else:
+                label = "AVISO\n\nNão preencheu"
+                if dia_test==0:
+                    label += " os dias"
+                    if canal_test==0: label += " e"
+                if canal_test==0: label += " os canais"
+                label += ".\n\nEfetue as alterações necessárias."
+                self.warningWindow.label.setText(label)
+                self.setEnabled(0)
+                self.warningWindow.show()
+                return False
+
+        else:
+            self.warningWindow.label.setText("AVISO\n\nA hora de fim deve ser superior\nà hora de início.\n\nEfetue as alterações necessárias.")
+            self.setEnabled(0)
+            self.warningWindow.show()
+            return False
+        return True
+    
     def on_off(self):
         k = self.progList.currentIndex()
         if not Prog[k]['A'] == int(self.ativo.isChecked()):
-            Prog[k]['A'] = int(self.ativo.isChecked())
-            # enviar ativo para o arduino
-            ser.reset_input_buffer()  # Reset do buffer para dar a ordem ao Arduino
-            ser.write('a'.encode('utf-8'))
-            print(ser.readline().decode('utf-8').rstrip())
-            serialWrite(k)
-            serialWrite(Prog[k]['A'])
+            if not self.comparar(): self.ativo.setChecked(0)
+            else:
+                Prog[k]['A'] = int(self.ativo.isChecked())
+                # enviar ativo para o arduino
+                ser.reset_input_buffer()  # Reset do buffer para dar a ordem ao Arduino
+                ser.write('a'.encode('utf-8'))
+                print(ser.readline().decode('utf-8').rstrip())
+                serialWrite(k)
+                serialWrite(Prog[k]['A'])
         
         if self.ativo.isChecked():
             # setting background color to green
@@ -349,6 +474,27 @@ class MainWindow(QtWidgets.QMainWindow):
             self.ativo.setStyleSheet("background-color : rgb(255,100,100)")
             self.ativo.setText("OFF")
            
+    def createWarningWindow(self):
+        self.warningWindow = subWindow()
+        self.warningWindow.createWindow(500,250)
+        self.warningWindow.setWindowTitle("Atenção")
+        self.warningWindow.setStyleSheet("background-color : rgb(250,240,240)")
+        # widgets
+        self.warningWindow.label = QtWidgets.QLabel("AVISO",self.warningWindow)
+        self.warningWindow.label.setAlignment(QtCore.Qt.AlignCenter | QtCore.Qt.AlignVCenter)
+        self.warningWindow.ok = QtWidgets.QPushButton("OK", self.warningWindow)
+        self.warningWindow.ok.setStyleSheet("background-color : white")
+        # posições
+        self.warningWindow.label.resize(500,215)
+        self.warningWindow.ok.setGeometry(200,215,100,30)
+        # funções
+        self.warningWindow.ok.clicked.connect(self.okFunction)
+        
+    def okFunction(self):
+        self.progList.setCurrentIndex(lastProg)
+        self.setEnabled(1)
+        self.warningWindow.hide()
+    
     def createNotSavedWindow(self):
         self.notSavedWindow = subWindow()
         self.notSavedWindow.createWindow(400,100)
@@ -391,29 +537,34 @@ class MainWindow(QtWidgets.QMainWindow):
         self.progList.setCurrentIndex(lastProg)
         self.setEnabled(1)
         self.notSavedWindow.hide()
-        
-        
+        self.varCloseEvent = 0
+                
     def debugFunction(self):
         print("DEBUG")
         receber_k(self.progList.currentIndex())
         debugTempo()
+        debugSensores()
+        self.setEnabled(0)
+        self.warningWindow.show()
 
 
 app = QtWidgets.QApplication(sys.argv)
 app.setStyleSheet("QLabel{font-size: 14pt;}" "QComboBox{font-size: 12pt;}" "QCheckBox{font-size: 12pt;}" "QRadioButton{font-size: 12pt;}" "QSpinBox{font-size: 12pt;}" "QPushButton{font-size: 12pt;}")
+
+print("Inicializando...")
+read_file()
 
 ser = serial.Serial(dev_name, 9600, timeout=1)
 ser.reset_input_buffer()  # Reset do buffer para dar a ordem ao Arduino
 initArduino()
 
 ser.reset_input_buffer()  # Reset do buffer para dar a ordem ao Arduino
-ser.write('e'.encode('utf-8'))
-receber()
-
-ser.reset_input_buffer()  # Reset do buffer para dar a ordem ao Arduino
 ser.write('t'.encode('utf-8'))
 initTempo()
 
+for i in range(20): enviar(i)
+
 main = MainWindow()
 main.show()  # Mostrar a janela
+
 sys.exit(app.exec_()) # Fechar a aplicação e sair do programa
