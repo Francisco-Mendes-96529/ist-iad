@@ -12,7 +12,7 @@
 - [X] Experimentar os sensores (verificar valores)
 - [X] Avisar se mudar de prog sem guardar
 - [ ] Incompatibilidade entre programas (horário&canais, fonte&horario)
-- [ ] Guardar prog num ficheiro
+- [X] Guardar prog num ficheiro
 - [X] sensores
 
 ## Sugestões
