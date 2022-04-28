@@ -13,7 +13,7 @@
 - [X] Avisar se mudar de prog sem guardar
 - [ ] Incompatibilidade entre programas (horário&canais, fonte&horario)
 - [ ] Guardar prog num ficheiro
-- [ ] sensores
+- [X] sensores
 
 ## Sugestões
 - [X] Janela notSaved, fechar = cancelar
