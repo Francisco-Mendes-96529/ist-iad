@@ -1,0 +1,180 @@
+Prog: 1
+Ativo: 1
+Dias: 0 0 0 0 1 0 0
+Hi: 0 0
+Hf: 0 0
+Canais: 1 0 0 0 0 0 0 0 0 0 0 0
+Fonte: 0
+Sensores: 1 0
+
+Prog: 2
+Ativo: 1
+Dias: 1 1 1 1 1 1 1
+Hi: 1 0
+Hf: 3 0
+Canais: 0 1 0 0 0 0 0 0 0 0 0 0
+Fonte: 0
+Sensores: 1 0
+
+Prog: 3
+Ativo: 1
+Dias: 0 0 1 0 0 0 0
+Hi: 0 0
+Hf: 0 0
+Canais: 0 0 1 0 0 0 0 0 0 0 0 0
+Fonte: 0
+Sensores: 1 0
+
+Prog: 4
+Ativo: 1
+Dias: 0 1 0 0 0 0 0
+Hi: 0 0
+Hf: 0 0
+Canais: 0 0 0 1 0 0 0 0 0 0 0 0
+Fonte: 0
+Sensores: 1 0
+
+Prog: 5
+Ativo: 1
+Dias: 0 0 1 0 0 0 0
+Hi: 0 0
+Hf: 0 0
+Canais: 0 0 0 0 1 0 0 0 0 0 0 0
+Fonte: 0
+Sensores: 0 0
+
+Prog: 6
+Ativo: 1
+Dias: 0 0 0 0 0 1 0
+Hi: 4 0
+Hf: 7 0
+Canais: 0 0 0 0 1 0 0 0 0 0 0 0
+Fonte: 0
+Sensores: 0 0
+
+Prog: 7
+Ativo: 1
+Dias: 1 0 0 0 0 0 0
+Hi: 0 0
+Hf: 0 0
+Canais: 0 0 0 0 0 1 0 0 0 0 0 0
+Fonte: 0
+Sensores: 0 0
+
+Prog: 8
+Ativo: 1
+Dias: 1 0 0 0 0 0 0
+Hi: 0 0
+Hf: 0 0
+Canais: 0 0 0 0 1 0 0 0 0 0 0 0
+Fonte: 0
+Sensores: 0 0
+
+Prog: 9
+Ativo: 1
+Dias: 0 1 0 0 0 0 0
+Hi: 0 0
+Hf: 0 0
+Canais: 0 0 0 0 0 1 0 0 0 0 0 0
+Fonte: 0
+Sensores: 0 0
+
+Prog: 10
+Ativo: 1
+Dias: 0 0 0 0 1 0 0
+Hi: 0 0
+Hf: 0 0
+Canais: 0 0 0 0 0 0 0 0 1 0 0 0
+Fonte: 0
+Sensores: 0 0
+
+Prog: 11
+Ativo: 1
+Dias: 0 0 0 0 1 0 0
+Hi: 0 0
+Hf: 0 0
+Canais: 0 0 0 0 0 0 0 0 0 1 0 0
+Fonte: 0
+Sensores: 0 0
+
+Prog: 12
+Ativo: 1
+Dias: 0 0 0 0 0 0 1
+Hi: 0 0
+Hf: 0 0
+Canais: 1 0 1 1 1 1 1 1 1 1 1 1
+Fonte: 0
+Sensores: 0 0
+
+Prog: 13
+Ativo: 0
+Dias: 0 0 0 0 0 0 0
+Hi: 0 0
+Hf: 0 0
+Canais: 0 0 0 0 0 0 0 0 0 0 0 0
+Fonte: 0
+Sensores: 0 0
+
+Prog: 14
+Ativo: 0
+Dias: 0 0 0 0 0 0 0
+Hi: 0 0
+Hf: 0 0
+Canais: 0 0 0 0 0 0 0 0 0 0 0 0
+Fonte: 0
+Sensores: 0 0
+
+Prog: 15
+Ativo: 0
+Dias: 0 0 0 0 0 0 0
+Hi: 0 0
+Hf: 0 0
+Canais: 0 0 0 0 0 0 0 0 0 0 0 0
+Fonte: 0
+Sensores: 0 0
+
+Prog: 16
+Ativo: 0
+Dias: 0 0 0 0 0 0 0
+Hi: 0 0
+Hf: 0 0
+Canais: 0 0 0 0 0 0 0 0 0 0 0 0
+Fonte: 0
+Sensores: 0 0
+
+Prog: 17
+Ativo: 0
+Dias: 0 0 0 0 0 0 0
+Hi: 0 0
+Hf: 0 0
+Canais: 0 0 0 0 0 0 0 0 0 0 0 0
+Fonte: 0
+Sensores: 0 0
+
+Prog: 18
+Ativo: 0
+Dias: 0 0 0 0 0 0 0
+Hi: 0 0
+Hf: 0 0
+Canais: 0 0 0 0 0 0 0 0 0 0 0 0
+Fonte: 0
+Sensores: 0 0
+
+Prog: 19
+Ativo: 0
+Dias: 0 0 0 0 0 0 0
+Hi: 0 0
+Hf: 0 0
+Canais: 0 0 0 0 0 0 0 0 0 0 0 0
+Fonte: 0
+Sensores: 0 0
+
+Prog: 20
+Ativo: 0
+Dias: 0 0 0 0 0 0 0
+Hi: 0 0
+Hf: 0 0
+Canais: 0 0 0 0 0 0 0 0 0 0 0 0
+Fonte: 0
+Sensores: 0 0
+
