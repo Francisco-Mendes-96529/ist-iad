@@ -280,10 +280,11 @@ class MainWindow(QtWidgets.QMainWindow):
         #self.createInfoWindow() #Cria a janela de informação de programas
         self.varCloseEvent = 0 # = 1 quando estamos a editar e tentamos fechar a mainWindow
         self.progFunction()
+        self.infoWindow = None
         
 # Funções
     def closeEvent(self, event):
-        if self.notSavedWindow.isVisible() or self.warningWindow.isVisible() or self.infoWindow.isVisible(): # Se uma janela secundária estiver visivel, ignora a tentativa de encerro da main window
+        if self.notSavedWindow.isVisible() or self.warningWindow.isVisible() or (0 if not self.infoWindow else self.infoWindow.isVisible()): # Se uma janela secundária estiver visivel, ignora a tentativa de encerro da main window
             event.ignore()
         elif self.guardar.isChecked(): #Há alterações por guardar
             self.varCloseEvent = 1
