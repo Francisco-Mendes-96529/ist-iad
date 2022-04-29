@@ -11,14 +11,14 @@
 - [X] Fazer funcionar o circuito
 - [X] Experimentar os sensores (verificar valores)
 - [X] Avisar se mudar de prog sem guardar
-- [ ] Incompatibilidade entre programas (horário&canais, fonte&horario)
-- [ ] Guardar prog num ficheiro
-- [ ] sensores
+- [X] Incompatibilidade entre programas (horario inicial&final, horário&canais, fonte&horario)
+- [X] Guardar prog num ficheiro
+- [X] sensores
 
 ## Sugestões
 - [X] Janela notSaved, fechar = cancelar
 - [X] Janela notSaved, bloquear X da MainWindow
-- [ ] "overwrite" do tempo
+- [X] "overwrite" do tempo
 
 
 ## Informações
@@ -81,3 +81,4 @@
 </table>
 
 Digitos nas spinboxes: https://stackoverflow.com/questions/19172262/pyqt4-qspinbox-value-format
+https://www.overleaf.com/1667738366rdjqjwhpxpsk

@@ -83,6 +83,13 @@ def debugTempo():
     line = ser.readline().decode('utf-8').rstrip()  # Ler e traduz o que foi enviado pelo Arduino
     print(line)
 
+def debugSensores():
+    ser.reset_input_buffer()  # Reset do buffer para dar a ordem ao Arduino
+    ser.write('s'.encode('utf-8'))
+    line = ser.readline().decode('utf-8').rstrip()  # Ler e traduz o que foi enviado pelo Arduino
+    print("Sensor 1: "+line)
+    line = ser.readline().decode('utf-8').rstrip()  # Ler e traduz o que foi enviado pelo Arduino
+    print("Sensor 2: "+line)
 
 # Definir porta para ligação ao Arduino (se não encontrar termina o programa)
 if os.path.exists('/dev/ttyACM0'):
@@ -397,6 +404,7 @@ class MainWindow(QtWidgets.QMainWindow):
         print("DEBUG")
         receber_k(self.progList.currentIndex())
         debugTempo()
+        debugSensores()
 
 
 app = QtWidgets.QApplication(sys.argv)
@@ -413,6 +421,8 @@ receber()
 ser.reset_input_buffer()  # Reset do buffer para dar a ordem ao Arduino
 ser.write('t'.encode('utf-8'))
 initTempo()
+
+
 
 main = MainWindow()
 main.show()  # Mostrar a janela
